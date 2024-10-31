@@ -15,7 +15,7 @@ jobs:
       - run:
           name: Configure GCP Credentials
           command: |
-            echo "${GCLOUD_CREDS}" > ${HOME}/gcloud-service-key.json
+            echo "${OPS_CLOUD_CREDS}" > ${HOME}/gcloud-service-key.json
             gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
             gcloud config set project fs-ops
             gcloud auth configure-docker --quiet us-central1-docker.pkg.dev
