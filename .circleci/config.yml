@@ -1,0 +1,31 @@
+version: 2.1
+
+jobs:
+  build-and-publish:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: install gcloud
+          command: wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-456.0.0-linux-x86_64.tar.gz -O - | tar -xzvf - && ./google-cloud-sdk/install.sh --disable-installation-options --quiet
+      - run:
+          command: echo 'export PATH=${PATH}:/home/circleci/project/google-cloud-sdk/bin' >> $BASH_ENV
+      - run:
+          name: Configure GCP Credentials
+          command: |
+            echo "${GCLOUD_CREDS}" > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+            gcloud config set project fs-ops
+            gcloud auth configure-docker --quiet us-central1-docker.pkg.dev
+      - run:
+          name: Build and Publish Docker Image
+          command: |
+            docker build -t us-central1-docker.pkg.dev/fs-ops/fullstory-images/anythingllm:${CIRCLE_BRANCH}_${CIRCLE_SHA1} .
+            docker push us-central1-docker.pkg.dev/fs-ops/fullstory-images/anythingllm:${CIRCLE_BRANCH}_${CIRCLE_SHA1}
+
+workflows:
+  build-and-publish-workflow:
+    jobs:
+      - build-and-publish
