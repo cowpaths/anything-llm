@@ -21,6 +21,7 @@ const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
 const WorkspaceChat = lazy(() => import("@/pages/WorkspaceChat"));
 const AdminUsers = lazy(() => import("@/pages/Admin/Users"));
+const AdminAuthentication = lazy(() => import("@/pages/Admin/Authentication"));
 const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
@@ -140,6 +141,10 @@ export default function App() {
                 <Route
                   path="/settings/embed-chats"
                   element={<AdminRoute Component={EmbedChats} />}
+                />
+                <Route
+                  path="/settings/authentication"
+                  element={<AdminRoute Component={AdminAuthentication} />}
                 />
                 {/* Manager */}
                 <Route

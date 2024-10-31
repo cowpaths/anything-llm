@@ -25,6 +25,8 @@ const SystemSettings = {
     "agent_sql_connections",
     "default_agent_skills",
     "imported_agent_skills",
+    "users_can_login_with_google",
+    "allowed_domain",
     "custom_app_name",
     "feature_flags",
     "meta_page_title",
@@ -40,6 +42,8 @@ const SystemSettings = {
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
+    "users_can_login_with_google",
+    "allowed_domain",
     "agent_sql_connections",
     "custom_app_name",
 
@@ -253,6 +257,16 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
+
+
+      // --------------------------------------------------------
+      // Social Providers
+      // --------------------------------------------------------
+      GoogleAuthClientId:
+        (await this.get({ label: "users_can_login_with_google" }))?.value ===
+        "true"
+          ? process.env.GOOGLE_AUTH_CLIENT_ID
+          : null,
     };
   },
 

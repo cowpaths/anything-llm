@@ -4,9 +4,11 @@ import System from "@/models/system";
 import { AUTH_USER } from "@/utils/constants";
 import showToast from "@/utils/toast";
 import { Plus, X } from "@phosphor-icons/react";
+import React, { useState } from "react";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
+  const [ssoEnabled, setSsoEnabled] = useState(user.use_social_provider);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -41,8 +43,13 @@ export default function AccountModal({ user, hideModal }) {
     const data = {};
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) {
-      if (!value || value === null) continue;
+      if (!value || value === null || key.startsWith('ro:')) continue;
       data[key] = value;
+    }
+
+    // allow opting out of sso
+    if (user.use_social_provider && !ssoEnabled) {
+      data.use_social_provider = false;
     }
 
     const { success, error } = await System.updateUser(data);
@@ -118,12 +125,19 @@ export default function AccountModal({ user, hideModal }) {
           </div>
           <div className="flex flex-col gap-y-4 px-6">
             <div>
-              <label
-                htmlFor="username"
-                className="block mb-2 text-sm font-medium text-white"
-              >
-                Username
-              </label>
+              <div className="w-full flex">
+                <label
+                  htmlFor="username"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  Username
+                </label>
+                {user.use_social_provider && (
+                  <p className="text-xs text-white/60 ml-auto">
+                    SSO User
+                  </p>
+                )}
+              </div>
               <input
                 name="username"
                 type="text"
@@ -133,30 +147,54 @@ export default function AccountModal({ user, hideModal }) {
                 defaultValue={user.username}
                 required
                 autoComplete="off"
+                disabled={ssoEnabled}
               />
               <p className="mt-2 text-xs text-white/60">
                 Username must only contain lowercase letters, numbers,
                 underscores, and hyphens with no spaces
               </p>
             </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block mb-2 text-sm font-medium text-white"
-              >
-                New Password
-              </label>
-              <input
-                name="password"
-                type="text"
-                className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder={`${user.username}'s new password`}
-                minLength={8}
-              />
-              <p className="mt-2 text-xs text-white/60">
-                Password must be at least 8 characters long
-              </p>
-            </div>
+            {user.use_social_provider && (
+              <div className="flex flex-row items-center justify-between">
+                <div className="text-sm font-medium text-white">
+                  Enabled for SSO Login
+                </div>
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    name="ro:use_social_provider"
+                    checked={ssoEnabled}
+                    onChange={(e) => {
+                      setSsoEnabled(e.target.checked);
+                    }}
+                    className="peer sr-only"
+                  />
+                  <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
+                </label>
+              </div>
+            )}
+            {!ssoEnabled && (
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  New Password
+                </label>
+                <input
+                  name="password"
+                  type="text"
+                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder={`${user.username}'s new password`}
+                  minLength={8}
+                  required={user.use_social_provider && !ssoEnabled}
+                />
+                <p className="mt-2 text-xs text-white/60">
+                  Password must be at least 8 characters long
+                </p>
+              </div>
+            )}
             <LanguagePreference />
           </div>
           <div className="flex justify-between items-center border-t border-gray-500/50 pt-4 p-6">

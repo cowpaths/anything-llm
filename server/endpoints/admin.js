@@ -377,6 +377,12 @@ function adminEndpoints(app) {
             case "imported_agent_skills":
               requestedSettings[label] = ImportedPlugin.listImportedPlugins();
               break;
+            case "users_can_login_with_google":
+              requestedSettings[label] = setting?.value === "true";
+              break;
+            case "allowed_domain":
+              requestedSettings[label] = setting?.value || null;
+              break;
             case "custom_app_name":
               requestedSettings[label] = setting?.value || null;
               break;
@@ -441,6 +447,12 @@ function adminEndpoints(app) {
               []
             ) || [],
           imported_agent_skills: ImportedPlugin.listImportedPlugins(),
+          users_can_login_with_google:
+            (await SystemSettings.get({ label: "users_can_login_with_google" }))
+              ?.value === "true",
+          allowed_domain:
+            (await SystemSettings.get({ label: "allowed_domain" }))?.value ||
+            null,
           custom_app_name:
             (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
             null,

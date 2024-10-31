@@ -83,6 +83,9 @@ export default {
     users: () => {
       return `/settings/users`;
     },
+    authentication: () => {
+      return `/settings/authentication`;
+    },
     invites: () => {
       return `/settings/invites`;
     },
