@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Build and Publish Docker Image
           command: |
-            docker build -t us-central1-docker.pkg.dev/fs-ops/fullstory-images/anythingllm:${CIRCLE_BRANCH}_${CIRCLE_SHA1} .
+            docker build -t us-central1-docker.pkg.dev/fs-ops/fullstory-images/anythingllm:${CIRCLE_BRANCH}_${CIRCLE_SHA1} -f docker/Dockerfile .
             docker push us-central1-docker.pkg.dev/fs-ops/fullstory-images/anythingllm:${CIRCLE_BRANCH}_${CIRCLE_SHA1}
 
 workflows:
