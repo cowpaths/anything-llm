@@ -10,6 +10,7 @@ const { EventLogs } = require("./eventLogs");
  * @property {string} role
  * @property {boolean} suspended
  * @property {number|null} dailyMessageLimit
+ * @property {boolean} use_social_provider
  */
 
 const User = {
@@ -22,6 +23,7 @@ const User = {
     "role",
     "suspended",
     "dailyMessageLimit",
+    "use_social_provider",
   ],
   validations: {
     username: (newValue = "") => {
@@ -62,6 +64,8 @@ const User = {
         return Number(Boolean(value));
       case "dailyMessageLimit":
         return value === null ? null : Number(value);
+      case "use_social_provider":
+        return Boolean(value);
       default:
         return String(value);
     }
@@ -107,6 +111,22 @@ const User = {
       return { user: null, error: error.message };
     }
   },
+
+  createWithSocialProvider: async function ({ username }) {
+    try {
+      const user = await prisma.users.create({
+        data: {
+          username,
+          use_social_provider: true,
+        },
+      });
+      return { user, error: null };
+    } catch (error) {
+      console.error("FAILED TO CREATE USER.", error.message);
+      return { user: null, error: error.message };
+    }
+  },
+
   // Log the changes to a user object, but omit sensitive fields
   // that are not meant to be logged.
   loggedChanges: function (updates, prev = {}) {
@@ -168,6 +188,13 @@ const User = {
           error:
             "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
         };
+
+      // don't allow users to self enroll in social provider login
+      if (updates.hasOwnProperty("use_social_provider") &&
+        !currentUser.use_social_provider &&
+        updates.use_social_provider) {
+        delete updates.use_social_provider;
+      }
 
       const user = await prisma.users.update({
         where: { id: parseInt(userId) },

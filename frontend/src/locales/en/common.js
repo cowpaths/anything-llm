@@ -39,6 +39,7 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
+    authentication: "Authentication",
   },
 
   // Page Definitions

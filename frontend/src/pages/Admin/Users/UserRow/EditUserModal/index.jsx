@@ -6,6 +6,7 @@ import { MessageLimitInput, RoleHintDisplay } from "../..";
 export default function EditUserModal({ currentUser, user, closeModal }) {
   const [role, setRole] = useState(user.role);
   const [error, setError] = useState(null);
+  const [ssoEnabled, setSsoEnabled] = useState(user.use_social_provider);
   const [messageLimit, setMessageLimit] = useState({
     enabled: user.dailyMessageLimit !== null,
     limit: user.dailyMessageLimit || 10,
@@ -17,13 +18,18 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     const data = {};
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) {
-      if (!value || value === null) continue;
+      if (!value || value === null || key.startsWith('ro:')) continue;
       data[key] = value;
     }
     if (messageLimit.enabled) {
       data.dailyMessageLimit = messageLimit.limit;
     } else {
       data.dailyMessageLimit = null;
+    }
+
+    // allow opting out of sso
+    if (user.use_social_provider && !ssoEnabled) {
+      data.use_social_provider = false;
     }
 
     const { success, error } = await Admin.updateUser(user.id, data);
@@ -51,12 +57,19 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
           <div className="p-6 space-y-6 flex h-full w-full">
             <div className="w-full flex flex-col gap-y-4">
               <div>
-                <label
-                  htmlFor="username"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  Username
-                </label>
+                <div className="w-full flex">
+                  <label
+                    htmlFor="username"
+                    className="block mb-2 text-sm font-medium text-white"
+                  >
+                    Username
+                  </label>
+                  {user.use_social_provider && (
+                    <p className="text-xs text-white/60 ml-auto">
+                      SSO User
+                    </p>
+                  )}
+                </div>
                 <input
                   name="username"
                   type="text"
@@ -66,31 +79,55 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   minLength={2}
                   required={true}
                   autoComplete="off"
+                  disabled={ssoEnabled}
                 />
                 <p className="mt-2 text-xs text-white/60">
                   Username must only contain lowercase letters, numbers,
                   underscores, and hyphens with no spaces
                 </p>
               </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  New Password
-                </label>
-                <input
-                  name="password"
-                  type="text"
-                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  placeholder={`${user.username}'s new password`}
-                  autoComplete="off"
-                  minLength={8}
-                />
-                <p className="mt-2 text-xs text-white/60">
-                  Password must be at least 8 characters long
-                </p>
-              </div>
+              {user.use_social_provider && (
+                <div className="flex flex-row items-center justify-between">
+                  <div className="text-sm font-medium text-white">
+                    Enabled for SSO Login
+                  </div>
+                  <label className="relative inline-flex cursor-pointer items-center">
+                    <input
+                      type="checkbox"
+                      name="ro:use_social_provider"
+                      checked={ssoEnabled}
+                      onChange={(e) => {
+                        setSsoEnabled(e.target.checked);
+                      }}
+                      className="peer sr-only"
+                    />
+                    <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
+                    <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
+                  </label>
+                </div>
+              )}
+              {!ssoEnabled && (
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block mb-2 text-sm font-medium text-white"
+                  >
+                    New Password
+                  </label>
+                  <input
+                    name="password"
+                    type="text"
+                    className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder={`${user.username}'s new password`}
+                    autoComplete="off"
+                    minLength={8}
+                    required={user.use_social_provider && !ssoEnabled}
+                  />
+                  <p className="mt-2 text-xs text-white/60">
+                    Password must be at least 8 characters long
+                  </p>
+                </div>
+              )}
               <div>
                 <label
                   htmlFor="role"
