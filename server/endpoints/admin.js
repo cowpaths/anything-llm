@@ -331,6 +331,7 @@ function adminEndpoints(app) {
           "feature_flags",
           "meta_page_title",
           "meta_page_favicon",
+          "api_header_name",
         ];
 
         for (const label of labels) {
@@ -397,6 +398,10 @@ function adminEndpoints(app) {
             case "meta_page_favicon":
               requestedSettings[label] =
                 await SystemSettings.getValueOrFallback({ label }, null);
+              break;
+            case "api_header_name":
+              requestedSettings[label] =
+                await SystemSettings.getAPIHeaderName();
               break;
             default:
               break;

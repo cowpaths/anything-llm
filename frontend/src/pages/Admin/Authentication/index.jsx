@@ -1,19 +1,31 @@
 import Sidebar from "@/components/SettingsSidebar/index.jsx";
 import { isMobile } from "react-device-detect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import showToast from "@/utils/toast";
 import ContextualSaveBar from "@/components/ContextualSaveBar/index.jsx";
 import GoogleSocialLogin from "./GoogleSocialLogin/index.jsx";
+import CustomizeAuthHeader
+  from "@/pages/Admin/Authentication/CustomizeAuthHeader/index.jsx";
 
 export default function AdminAuthentication() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [googleAuthLoginComplete, setGoogleAuthLoginComplete] = useState(false);
+  const [customAuthHeaderComplete, setCustomAuthHeaderComplete] = useState(false);
 
   const saveComplete = () => {
     setSaving(false);
     setHasChanges(false);
     showToast("Authentication settings updated successfully.", "success");
   };
+
+  useEffect(() => {
+    if (googleAuthLoginComplete && customAuthHeaderComplete) {
+      saveComplete();
+      setGoogleAuthLoginComplete(false);
+      setCustomAuthHeaderComplete(false);
+    }
+  }, [googleAuthLoginComplete, customAuthHeaderComplete]);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -40,7 +52,14 @@ export default function AdminAuthentication() {
                 setHasChanges(true);
               }}
               persistChanges={saving}
-              saveComplete={saveComplete}
+              saveComplete={() => setGoogleAuthLoginComplete(true)}
+            />
+            <CustomizeAuthHeader
+              onChanges={() => {
+                setHasChanges(true);
+              }}
+              persistChanges={saving}
+              saveComplete={() => setCustomAuthHeaderComplete(true)}
             />
             <ContextualSaveBar
               showing={hasChanges}
