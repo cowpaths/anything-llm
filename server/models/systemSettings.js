@@ -31,6 +31,7 @@ const SystemSettings = {
     "feature_flags",
     "meta_page_title",
     "meta_page_favicon",
+    "api_header_name",
   ],
   supportedFields: [
     "logo_filename",
@@ -46,6 +47,7 @@ const SystemSettings = {
     "allowed_domain",
     "agent_sql_connections",
     "custom_app_name",
+    "api_header_name",
 
     // Meta page customization
     "meta_page_title",
@@ -363,6 +365,16 @@ const SystemSettings = {
     } catch (error) {
       console.error(error.message);
       return false;
+    }
+  },
+
+  getAPIHeaderName: async function () {
+    try {
+      const setting = await this.get({ label: "api_header_name" });
+      return setting?.value || process.env.API_HEADER_NAME || "Authorization";
+    } catch (error) {
+      console.error(error.message);
+      return process.env.API_HEADER_NAME || "Authorization";
     }
   },
 

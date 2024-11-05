@@ -3,9 +3,10 @@ const { SystemSettings } = require("../../models/systemSettings");
 
 async function validApiKey(request, response, next) {
   const multiUserMode = await SystemSettings.isMultiUserMode();
+  const apiHeaderName = await SystemSettings.getAPIHeaderName();
   response.locals.multiUserMode = multiUserMode;
 
-  const auth = request.header("Authorization");
+  const auth = request.header(apiHeaderName);
   const bearerKey = auth ? auth.split(" ")[1] : null;
   if (!bearerKey) {
     response.status(403).json({
