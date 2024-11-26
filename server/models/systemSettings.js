@@ -370,7 +370,6 @@ const SystemSettings = {
 
   getAPIHeaderName: async function () {
     try {
-      console.log('getAPIHeaderName...')
       const setting = await this.get({ label: "api_header_name" });
       return setting?.value || process.env.API_HEADER_NAME || "Authorization";
     } catch (error) {
