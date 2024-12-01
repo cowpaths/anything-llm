@@ -77,6 +77,8 @@ if (process.env.NODE_ENV !== "development") {
         // Disable I-framing of entire site UI
         res.removeHeader("X-Powered-By");
         res.setHeader("X-Frame-Options", "DENY");
+        res.setHeader("Cache-Control", "no-store");
+        res.setHeader("X-Cowpaths", "true");
       },
     })
   );
