@@ -113,7 +113,7 @@ export default function GoogleSocialLogin({
           </div>
 
           <label className="block text-sm font-medium text-white mt-2">
-            Organization domain (TO BE REMOVE LATER__12/7)
+            Organization domain
           </label>
           <p className="text-xs leading-[18px] font-base text-white/60">
             Restrict access to a specific domain, or leave empty to allow login
