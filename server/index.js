@@ -78,7 +78,7 @@ if (process.env.NODE_ENV !== "development") {
         res.removeHeader("X-Powered-By");
         res.setHeader("X-Frame-Options", "DENY");
         // res.setHeader("Cache-Control", "no-store");
-        res.setHeader("X-Cowpaths", "true");
+        res.setHeader("X-Cowpaths", "yoda");
         if (path.endsWith("index.js")) {
           res.setHeader("Cache-Control", "no-store");
         }
