@@ -73,12 +73,15 @@ if (process.env.NODE_ENV !== "development") {
   app.use(
     express.static(path.resolve(__dirname, "public"), {
       extensions: ["js"],
-      setHeaders: (res) => {
+      setHeaders: (res, path) => {
         // Disable I-framing of entire site UI
         res.removeHeader("X-Powered-By");
         res.setHeader("X-Frame-Options", "DENY");
         // res.setHeader("Cache-Control", "no-store");
         res.setHeader("X-Cowpaths", "true");
+        if (path.endsWith("index.js")) {
+          res.setHeader("Cache-Control", "no-store");
+        }
       },
     })
   );
