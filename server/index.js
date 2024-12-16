@@ -77,7 +77,7 @@ if (process.env.NODE_ENV !== "development") {
         // Disable I-framing of entire site UI
         res.removeHeader("X-Powered-By");
         res.setHeader("X-Frame-Options", "DENY");
-        res.setHeader("X-Cache-Mgmt", "Standard Cache Control");
+        res.setHeader("X-Cache-Mgmt", "Standard-Cache-Control");
 
         // Disable caching of index.js, always!
         // if (path.endsWith("index.js")) {
