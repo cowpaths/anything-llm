@@ -30,7 +30,7 @@ export default function CustomizeAuthHeader({
   return (
     <div className="mt-8">
       <h2 className="text-base leading-6 font-bold text-white">
-        Custom API Authorization Header
+        Custom API Authorization Header (12/16)
       </h2>
       <p className="text-xs leading-[18px] font-base text-white/60">
         This setting allows you to configure the header name used for the bearer
