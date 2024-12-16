@@ -4,6 +4,8 @@ import System from "@/models/system";
 import { AUTH_USER } from "@/utils/constants";
 import showToast from "@/utils/toast";
 import { Plus, X } from "@phosphor-icons/react";
+import ModalWrapper from "@/components/ModalWrapper";
+import { useTheme } from "@/hooks/useTheme";
 import React, { useState } from "react";
 
 export default function AccountModal({ user, hideModal }) {
@@ -68,19 +70,20 @@ export default function AccountModal({ user, hideModal }) {
   };
 
   return (
-    <div
-      id="account-modal"
-      className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center"
-    >
-      <div className="relative w-[500px] max-w-2xl max-h-full bg-main-gradient rounded-lg shadow">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white">Edit Account</h3>
+    <ModalWrapper isOpen={true}>
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+          <div className="w-full flex gap-x-2 items-center">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              Edit Account
+            </h3>
+          </div>
           <button
             onClick={hideModal}
             type="button"
-            className="text-gray-400 bg-transparent hover:border-white/60 rounded-lg p-1.5 ml-auto inline-flex items-center hover:bg-menu-item-selected-gradient hover:border-slate-100 border-transparent"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-lg" />
+            <X size={24} weight="bold" className="text-white" />
           </button>
         </div>
         <form onSubmit={handleUpdate} className="space-y-6">
@@ -214,7 +217,7 @@ export default function AccountModal({ user, hideModal }) {
           </div>
         </form>
       </div>
-    </div>
+    </ModalWrapper>
   );
 }
 
@@ -236,7 +239,7 @@ function LanguagePreference() {
       </label>
       <select
         name="userLang"
-        className="bg-zinc-900 w-fit mt-2 px-4 border-gray-500 text-white text-sm rounded-lg block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
         defaultValue={currentLanguage || "en"}
         onChange={(e) => changeLanguage(e.target.value)}
       >
@@ -247,6 +250,33 @@ function LanguagePreference() {
             </option>
           );
         })}
+      </select>
+    </div>
+  );
+}
+
+function ThemePreference() {
+  const { theme, setTheme, availableThemes } = useTheme();
+
+  return (
+    <div>
+      <label
+        htmlFor="theme"
+        className="block mb-2 text-sm font-medium text-white"
+      >
+        Theme Preference
+      </label>
+      <select
+        name="theme"
+        value={theme}
+        onChange={(e) => setTheme(e.target.value)}
+        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+      >
+        {Object.entries(availableThemes).map(([key, value]) => (
+          <option key={key} value={key}>
+            {value}
+          </option>
+        ))}
       </select>
     </div>
   );
