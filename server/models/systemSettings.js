@@ -14,7 +14,7 @@ function isNullOrNaN(value) {
 }
 
 const SystemSettings = {
-  protectedFields: ["multi_user_mode"],
+  protectedFields: ["multi_user_mode", "hub_api_key"],
   publicFields: [
     "footer_data",
     "support_email",
@@ -49,6 +49,9 @@ const SystemSettings = {
 
     // beta feature flags
     "experimental_live_file_sync",
+
+    // Hub settings
+    "hub_api_key",
   ],
   validations: {
     footer_data: (updates) => {
@@ -100,6 +103,7 @@ const SystemSettings = {
             "serply-engine",
             "searxng-engine",
             "tavily-search",
+            "duckduckgo-engine",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -164,6 +168,10 @@ const SystemSettings = {
         new MetaGenerator().clearConfig();
       }
     },
+    hub_api_key: (apiKey) => {
+      if (!apiKey) return null;
+      return String(apiKey);
+    },
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
@@ -192,6 +200,8 @@ const SystemSettings = {
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      GenericOpenAiEmbeddingMaxConcurrentChunks:
+        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -448,6 +458,11 @@ const SystemSettings = {
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
       OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
+      // Novita LLM Keys
+      NovitaLLMApiKey: !!process.env.NOVITA_LLM_API_KEY,
+      NovitaLLMModelPref: process.env.NOVITA_LLM_MODEL_PREF,
+      NovitaLLMTimeout: process.env.NOVITA_LLM_TIMEOUT_MS,
+
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
@@ -532,6 +547,11 @@ const SystemSettings = {
       // xAI LLM API Keys
       XAIApiKey: !!process.env.XAI_LLM_API_KEY,
       XAIModelPref: process.env.XAI_LLM_MODEL_PREF,
+
+      // Nvidia NIM Keys
+      NvidiaNimLLMBasePath: process.env.NVIDIA_NIM_LLM_BASE_PATH,
+      NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
+      NvidiaNimLLMTokenLimit: process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT,
     };
   },
 
@@ -554,6 +574,22 @@ const SystemSettings = {
         (await SystemSettings.get({ label: "experimental_live_file_sync" }))
           ?.value === "enabled",
     };
+  },
+
+  /**
+   * Get user configured Community Hub Settings
+   * Connection key is used to authenticate with the Community Hub API
+   * for your account.
+   * @returns {Promise<{connectionKey: string}>}
+   */
+  hubSettings: async function () {
+    try {
+      const hubKey = await this.get({ label: "hub_api_key" });
+      return { connectionKey: hubKey?.value || null };
+    } catch (error) {
+      console.error(error.message);
+      return { connectionKey: null };
+    }
   },
 };
 
