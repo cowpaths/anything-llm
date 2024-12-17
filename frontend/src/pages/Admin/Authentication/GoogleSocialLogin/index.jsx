@@ -108,12 +108,12 @@ export default function GoogleSocialLogin({
               value={canLoginWithGoogle.clientId}
               min={1}
               max={300}
-              className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] placeholder:text-theme-settings-input-placeholder"
             />
           </div>
 
           <label className="block text-sm font-medium text-white mt-2">
-            Organization domain (12/16, part deux)
+            Organization domain
           </label>
           <p className="text-xs leading-[18px] font-base text-white/60">
             Restrict access to a specific domain, or leave empty to allow login
@@ -135,7 +135,7 @@ export default function GoogleSocialLogin({
               value={canLoginWithGoogle.allowedDomain || ""}
               min={1}
               max={300}
-              className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] placeholder:text-theme-settings-input-placeholder"
             />
           </div>
         </div>

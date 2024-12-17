@@ -30,7 +30,7 @@ export default function CustomizeAuthHeader({
   return (
     <div className="mt-8">
       <h2 className="text-base leading-6 font-bold text-white">
-        Custom API Authorization Header (12/16, part deux)
+        Custom API Authorization Header
       </h2>
       <p className="text-xs leading-[18px] font-base text-white/60">
         This setting allows you to configure the header name used for the bearer
@@ -45,7 +45,7 @@ export default function CustomizeAuthHeader({
             setApiHeaderName(e.target.value);
             onChanges(e.target.value);
           }}
-          className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+          className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] placeholder:text-theme-settings-input-placeholder"
         />
       </div>
     </div>
